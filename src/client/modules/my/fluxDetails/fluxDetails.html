@@ -1,0 +1,17 @@
+<template>
+    <template if:true={loading}>
+        <div class="d-flex justify-content-center" style="margin-top: 10rem;">
+          <div class="spinner-border text-primary" style="width: 6rem; height: 6rem;" role="status">
+            <span class="sr-only"></span>
+          </div>
+        </div>
+    </template>
+  <div class="main-container">
+    <div class="chart-container-1">
+      <div id="container" lwc:dom="manual" class="myChart chart"></div>
+    </div>
+    <div class="chart-container-2">
+      <div id="container2" lwc:dom="manual" class="myChart2 chart"></div>
+    </div>
+  </div>
+</template>

@@ -1,0 +1,26 @@
+.container_flex {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}
+.chart {
+    height: 500px;
+    flex: 0 0 auto;
+    margin: 1rem;
+  }
+
+  
+  .main-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .main-container > div {
+      padding: 0px 10px;
+  }
+
+  .select__class {
+      width: 20%;
+      margin-top: 5%;
+  }

@@ -1,0 +1,13 @@
+<template>
+    <header>
+        <img src="resources/lwc.png" alt="App logo">
+        <h2>Earthquakes</h2>
+      </header>
+      <div>
+        <!--<my-data-corr amp={amp} phase={phase} protons={protons} electrons={electrons}></my-data-corr>-->
+      </div>
+      <div>
+        <my-chart-processor eartquake={earthquakeDate} onsenddata={handleChartData} onsendvlf={handleVlf}></my-chart-processor>
+        <my-earthquake-details month={month} year={year} station={station} day={day} onselecteddate={handleUserDate}></my-earthquake-details>
+      </div>
+</template>
