@@ -26,7 +26,7 @@
         "npm": ">=6.4.1",
         "yarn": ">=1.9.4"
     },
-    "homepage": "https://github.com/Natalia/uni-app",
+    "homepage": "https://missnobody17.github.io/individualProject/",
     "keywords": [
         "lwc"
     ],
@@ -64,11 +64,13 @@
         "serve": "run-p serve:client serve:api",
         "serve:api": "node src/server/api.js",
         "serve:client": "node scripts/api.js",
+        "predeploy": "npm run build",
         "deploy": "gh-pages -d dist"
     },
     "devDependencies": {
         "eslint": "^7.32.0",
         "eslint-plugin-inclusive-language": "^2.2.0",
+        "gh-pages": "^3.2.3",
         "husky": "^7.0.4",
         "lwc-services": "^3.2.2",
         "npm-run-all": "^4.1.5",
