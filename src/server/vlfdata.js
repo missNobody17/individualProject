@@ -119,7 +119,7 @@ const rawData = async (m, year, station_amp, station_phase, isDay, whichDay, day
             }
         }else {  //Load data
             try{
-                data = await getData(`/VLF-data/${year}/${month}/T${whichDay}${month}${lastDigit}A.kam`);
+                data = await getData(`./VLF-data/${year}/${month}/T${whichDay}${month}${lastDigit}A.kam`);
             }catch(err) {
                 console.log(err);
             }
@@ -153,7 +153,7 @@ const rawData = async (m, year, station_amp, station_phase, isDay, whichDay, day
                 }
             }else {  //Load data
                 try{
-                    data = await getData(`/VLF-data/${year}/${month}/T${i}${month}${lastDigit}A.kam`);
+                    data = await getData(`./VLF-data/${year}/${month}/T${i}${month}${lastDigit}A.kam`);
                 }catch(err) {
                     console.log(err);
                     break;
@@ -196,7 +196,7 @@ const rawData = async (m, year, station_amp, station_phase, isDay, whichDay, day
                 }
             }else {  //Load data
                 try{
-                    data = await getData(`/VLF-data/${year}/${month}/T${i}${month}${lastDigit}A.kam`);
+                    data = await getData(`./VLF-data/${year}/${month}/T${i}${month}${lastDigit}A.kam`);
                 }catch(err) {
                     console.log(err);
                     break;
@@ -239,7 +239,7 @@ const averageData = async(m, year, station_amp, station_phase) => {
     for(let i = 1; i < month_len+1; i++){
         if(i > 0 && i < 10){ //Load data
             try{
-                data = await getData(`/VLF-data/${year}/${month}/T0${i}${month}${lastDigit}A.kam`, 'utf8');   
+                data = await getData(`./VLF-data/${year}/${month}/T0${i}${month}${lastDigit}A.kam`, 'utf8');   
             }catch(err) {
                 console.log(err);
                 break;
@@ -247,7 +247,7 @@ const averageData = async(m, year, station_amp, station_phase) => {
         }else {  //Load data
             try{
                 // eslint-disable-next-line no-await-in-loop
-                data = await getData(`/VLF-data/${year}/${month}/T${i}${month}${lastDigit}A.kam`);
+                data = await getData(`./VLF-data/${year}/${month}/T${i}${month}${lastDigit}A.kam`);
             }catch(err) {
                 console.log(err);
                 break;
@@ -287,7 +287,7 @@ const avg = async(m, year, station_amp, station_phase, whichDay, dayFrom, dayTo)
         for (let j = whichDay - 5; j < whichDay + 1; j++) {
             if (j < 1) {
                 try {
-                    data = Boolean(prev_year) ? await getData(`/VLF-data/${prev_year}/${prev_month}/T${prev_month_len + j}${prev_month}${(parseInt(prev_year, 10) % 10)}A.kam`, 'utf8') : await getData(`/VLF-data/${year}/${prev_month}/T${prev_month_len + j}${prev_month}${lastDigit}A.kam`, 'utf8');
+                    data = Boolean(prev_year) ? await getData(`./VLF-data/${prev_year}/${prev_month}/T${prev_month_len + j}${prev_month}${(parseInt(prev_year, 10) % 10)}A.kam`, 'utf8') : await getData(`/VLF-data/${year}/${prev_month}/T${prev_month_len + j}${prev_month}${lastDigit}A.kam`, 'utf8');
                 } catch (err) {
                     console.log(err);
                     break;
@@ -295,14 +295,14 @@ const avg = async(m, year, station_amp, station_phase, whichDay, dayFrom, dayTo)
             }
             else if (j > 0 && j < 10) { //Load data
                 try {
-                    data = await getData(`/VLF-data/${year}/${month}/T0${j}${month}${lastDigit}A.kam`, 'utf8');
+                    data = await getData(`./VLF-data/${year}/${month}/T0${j}${month}${lastDigit}A.kam`, 'utf8');
                 } catch (err) {
                     console.log(err);
                     break;
                 }
             } else {  //Load data
                 try {
-                    data = await getData(`/VLF-data/${year}/${month}/T${j}${month}${lastDigit}A.kam`);
+                    data = await getData(`./VLF-data/${year}/${month}/T${j}${month}${lastDigit}A.kam`);
                 } catch (err) {
                     console.log(err);
                     break;
@@ -328,7 +328,7 @@ const avg = async(m, year, station_amp, station_phase, whichDay, dayFrom, dayTo)
             for(let j = i-5; j<i+1; j++){
                 if(j < 1) {
                     try{
-                        data = Boolean(prev_year) ? await getData(`/VLF-data/${prev_year}/${prev_month}/T${prev_month_len+j}${prev_month}${(parseInt(prev_year, 10) % 10)}A.kam`, 'utf8') : await getData(`/VLF-data/${year}/${prev_month}/T${prev_month_len+j}${prev_month}${lastDigit}A.kam`, 'utf8');
+                        data = Boolean(prev_year) ? await getData(`./VLF-data/${prev_year}/${prev_month}/T${prev_month_len+j}${prev_month}${(parseInt(prev_year, 10) % 10)}A.kam`, 'utf8') : await getData(`/VLF-data/${year}/${prev_month}/T${prev_month_len+j}${prev_month}${lastDigit}A.kam`, 'utf8');
                     }catch(err) {
                         console.log(err);
                         break;
@@ -336,14 +336,14 @@ const avg = async(m, year, station_amp, station_phase, whichDay, dayFrom, dayTo)
                 }
                 else if(j > 0 && j < 10){ //Load data
                     try{
-                        data = await getData(`/VLF-data/${year}/${month}/T0${j}${month}${lastDigit}A.kam`, 'utf8');
+                        data = await getData(`./VLF-data/${year}/${month}/T0${j}${month}${lastDigit}A.kam`, 'utf8');
                     }catch(err) {
                         console.log(err);
                         break;
                     }
                 }else {  //Load data
                     try{
-                        data = await getData(`/VLF-data/${year}/${month}/T${j}${month}${lastDigit}A.kam`);
+                        data = await getData(`./VLF-data/${year}/${month}/T${j}${month}${lastDigit}A.kam`);
                     }catch(err) {
                         console.log(err);
                         break;
@@ -370,7 +370,7 @@ const avg = async(m, year, station_amp, station_phase, whichDay, dayFrom, dayTo)
             for(let j = i-5; j<i+1; j++){
                 if(j < 1) {
                     try{
-                        data = Boolean(prev_year) ? await getData(`/VLF-data/${prev_year}/${prev_month}/T${prev_month_len+j}${prev_month}${(parseInt(prev_year, 10) % 10)}A.kam`, 'utf8') : await getData(`/VLF-data/${year}/${prev_month}/T${prev_month_len+j}${prev_month}${lastDigit}A.kam`, 'utf8');
+                        data = Boolean(prev_year) ? await getData(`./VLF-data/${prev_year}/${prev_month}/T${prev_month_len+j}${prev_month}${(parseInt(prev_year, 10) % 10)}A.kam`, 'utf8') : await getData(`/VLF-data/${year}/${prev_month}/T${prev_month_len+j}${prev_month}${lastDigit}A.kam`, 'utf8');
                     }catch(err) {
                         console.log(err);
                         break;
@@ -378,14 +378,14 @@ const avg = async(m, year, station_amp, station_phase, whichDay, dayFrom, dayTo)
                 }
                 else if(j > 0 && j < 10){ //Load data
                     try{
-                        data = await getData(`/VLF-data/${year}/${month}/T0${j}${month}${lastDigit}A.kam`, 'utf8');
+                        data = await getData(`./VLF-data/${year}/${month}/T0${j}${month}${lastDigit}A.kam`, 'utf8');
                     }catch(err) {
                         console.log(err);
                         break;
                     }
                 }else {  //Load data
                     try{
-                        data = await getData(`/VLF-data/${year}/${month}/T${j}${month}${lastDigit}A.kam`);
+                        data = await getData(`./VLF-data/${year}/${month}/T${j}${month}${lastDigit}A.kam`);
                     }catch(err) {
                         console.log(err);
                         break;
@@ -431,7 +431,7 @@ const difference = async (m, year, station_amp, station_phase, isDay, whichDay, 
             }
         } else {  //Load data
             try {
-                data = await getData(`/VLF-data/${year}/${month}/T${whichDay}${month}${lastDigit}A.kam`);
+                data = await getData(`./VLF-data/${year}/${month}/T${whichDay}${month}${lastDigit}A.kam`);
             } catch (err) {
                 console.log(err);
             }
@@ -467,7 +467,7 @@ const difference = async (m, year, station_amp, station_phase, isDay, whichDay, 
                 }
             }else {  //Load data
                 try{
-                    data = await getData(`/VLF-data/${year}/${month}/T${i}${month}${lastDigit}A.kam`);
+                    data = await getData(`./VLF-data/${year}/${month}/T${i}${month}${lastDigit}A.kam`);
                 }catch(err) {
                     console.log(err);
                     break;
@@ -506,7 +506,7 @@ const difference = async (m, year, station_amp, station_phase, isDay, whichDay, 
                 }
             }else {  //Load data
                 try{
-                    data = await getData(`/VLF-data/${year}/${month}/T${i}${month}${lastDigit}A.kam`);
+                    data = await getData(`./VLF-data/${year}/${month}/T${i}${month}${lastDigit}A.kam`);
                 }catch(err) {
                     console.log(err);
                     break;
@@ -556,7 +556,7 @@ const weekBeforeAfter = async (m, year, station_amp, station_phase, isDay, which
         for (let j = whichDay - 7; j <= whichDay + 7; j++) {
             if (j < 1) {
                 try {
-                    data = Boolean(prev_year) ? await getData(`/VLF-data/${prev_year}/${prev_month}/T${prev_month_len + j}${prev_month}${(parseInt(prev_year, 10) % 10)}A.kam`, 'utf8') : await getData(`/VLF-data/${year}/${prev_month}/T${prev_month_len + j}${prev_month}${lastDigit}A.kam`, 'utf8');
+                    data = Boolean(prev_year) ? await getData(`./VLF-data/${prev_year}/${prev_month}/T${prev_month_len + j}${prev_month}${(parseInt(prev_year, 10) % 10)}A.kam`, 'utf8') : await getData(`/VLF-data/${year}/${prev_month}/T${prev_month_len + j}${prev_month}${lastDigit}A.kam`, 'utf8');
                 } catch (err) {
                     console.log(err);
                     break;
@@ -564,21 +564,21 @@ const weekBeforeAfter = async (m, year, station_amp, station_phase, isDay, which
             }
             else if (j > 0 && j < 10) { //Load data
                 try {
-                    data = await getData(`/VLF-data/${year}/${month}/T0${j}${month}${lastDigit}A.kam`, 'utf8');
+                    data = await getData(`./VLF-data/${year}/${month}/T0${j}${month}${lastDigit}A.kam`, 'utf8');
                 } catch (err) {
                     console.log(err);
                     break;
                 }
             } else if (j > month_len) { //Load data
                 try {
-                    data = Boolean(next_year) ? await getData(`/VLF-data/${next_year}/${next_month}/T0${j-month_len}${next_month}${(parseInt(next_year, 10) % 10)}A.kam`, 'utf8') : await getData(`/VLF-data/${year}/${next_month}/T0${j - month_len}${next_month}${lastDigit}A.kam`, 'utf8');
+                    data = Boolean(next_year) ? await getData(`./VLF-data/${next_year}/${next_month}/T0${j-month_len}${next_month}${(parseInt(next_year, 10) % 10)}A.kam`, 'utf8') : await getData(`/VLF-data/${year}/${next_month}/T0${j - month_len}${next_month}${lastDigit}A.kam`, 'utf8');
                 } catch (err) {
                     console.log(err);
                     break;
                 }
             } else {  //Load data
                 try {
-                    data = await getData(`/VLF-data/${year}/${month}/T${j}${month}${lastDigit}A.kam`);
+                    data = await getData(`./VLF-data/${year}/${month}/T${j}${month}${lastDigit}A.kam`);
                 } catch (err) {
                     console.log(err);
                     break;
