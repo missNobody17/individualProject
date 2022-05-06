@@ -10,6 +10,12 @@
         </select>
       </div>
       <div class="select__class">
+          <label for="fresnel">Select the Fresnel Zone number</label>
+          <div>
+            <input class="form-control" value={n} type="number" id="fresnel" name="fresnel" min="1" max="100" onchange={handleFresnel}>  
+          </div>       
+      </div>
+      <div class="select__class">
         <label for="pet-select-2">Select the month</label>
         <select class="form-select" id="pet-select-2" aria-label="Select the month" onchange={handleMonth}>
           <option selected hidden value="AUG">AUG</option>
@@ -40,12 +46,33 @@
         <select class="form-select" aria-label="Select view" onchange={handleView}>
           <option value="month">Month</option>
           <option value="day">Day</option>
+          <option value="date">Time Range</option>
         </select>
       </div>
       <template if:true={day}>
         <div class="select__class">
           <label for="pet-select">Select the day</label>
           <select class="form-select" aria-label="Select the day" onchange={handleDay}>
+            <option selected hidden value="1">1</option>
+            <template for:each={month_len} for:item="day">
+              <option key={day} value={day}>{day}</option>
+            </template>
+          </select>
+        </div>
+      </template>
+      <template if:true={isTimeRange}>
+        <div class="select__class">
+          <label for="pet-select">Select from which day</label>
+          <select class="form-select" aria-label="Select the day" onchange={handleDayFrom}>
+            <option selected hidden value="1">1</option>
+            <template for:each={month_len} for:item="day">
+              <option key={day} value={day}>{day}</option>
+            </template>
+          </select>
+        </div>
+        <div class="select__class">
+          <label for="pet-select">Select to which day</label>
+          <select class="form-select" aria-label="Select the day" onchange={handleDayTo}>
             <option selected hidden value="1">1</option>
             <template for:each={month_len} for:item="day">
               <option key={day} value={day}>{day}</option>
@@ -79,13 +106,25 @@
     </div>
     <template if:true={earthquakeView}>
       <div class="chart-container-5">
-        <div id="container6" lwc:dom="manual" class="myChart5 chart"></div>
+        <div id="container5" lwc:dom="manual" class="myChart5 chart"></div>
       </div>
       <div class="chart-container-6">
-        <div id="container5" lwc:dom="manual" class="myChart6 chart"></div>
+        <div id="container6" lwc:dom="manual" class="myChart6 chart"></div>
       </div>
     </template>
-    <my-flux-details onsendflux={handleFlux} month={month} year={year} day={whichDay} isday={partOfDay} station={amp} earthquake={eartquake}></my-flux-details>
+    <my-flux-details onsendflux={handleFlux} month={month} year={year} day={whichDay} isday={partOfDay} station={amp} earthquake={eartquake} dayfrom={dayFrom} dayto={dayTo} isclicked={isClicked}></my-flux-details>
+    <div class="chart-container-7">
+      <div id="container7" lwc:dom="manual" class="myChart7 chart"></div>
+    </div>
+    <div class="chart-container-8">
+      <div id="container8" lwc:dom="manual" class="myChart8 chart"></div>
+    </div>
+    <div class="chart-container-9">
+      <div id="container9" lwc:dom="manual" class="myChart9 chart"></div>
+    </div>
+    <div class="chart-container-10">
+      <div id="container10" lwc:dom="manual" class="myChart10 chart"></div>
+    </div>
     <div>
 
 

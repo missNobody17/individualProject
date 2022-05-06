@@ -68,17 +68,17 @@ const lowerData = (smallerDataLen, arrayToReduce) => {
     return arr;
 }
 
-const init = async (month, year, whichDay, isDay, station) => {
-    const [vlf_amp, vlf_phase] = await vlf.rawData(month, year , station, parseInt(station, 10) + 1, isDay, whichDay);
-    const [electrons, dLengths] = await ftp.getElectrons(month, year, whichDay, isDay, station);
-    const protons = await ftp.getProtons(month, year, whichDay, isDay, station);
+const init = async (month, year, whichDay, isDay, station, dayFrom, dayTo) => {
+    const [vlf_amp, vlf_phase] = await vlf.rawData(month, year , station, parseInt(station, 10) + 1, isDay, dayFrom, dayTo);
+    const protons = await ftp.getProtons(month, year, whichDay, isDay, station, dayFrom, dayTo);
+    const [electrons, dLengths] = await ftp.getElectrons(month, year, whichDay, isDay, station, dayFrom, dayTo);
     if (vlf_amp && vlf_phase && electrons && protons) {
         try {
             const r1 = calculateCorrelation(electrons, lowerData(electrons.length, vlf_amp));
             const r2 = calculateCorrelation(protons, lowerData(electrons.length, vlf_amp));
             const r3 = calculateCorrelation(electrons, lowerData(electrons.length, vlf_phase));
             const r4 = calculateCorrelation(protons, lowerData(electrons.length, vlf_phase));
-            return { ea: r1.correlationCoefficient, pa: r2.correlationCoefficient, ep: r3.correlationCoefficient, pp: r4.correlationCoefficient };
+            return { ea: r1?.correlationCoefficient, pa: r2?.correlationCoefficient, ep: r3?.correlationCoefficient, pp: r4?.correlationCoefficient };
         }catch(err){
             console.log(err);
         }

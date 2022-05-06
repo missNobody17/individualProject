@@ -44,14 +44,15 @@ const midpoint = (lat1, long1, lat2, long2) => {
     return [Math.toDegrees(lat3), Math.toDegrees(lon3)];
 }
 
-const GetEllipseAxisLengths = (p1_lat, p1_lng, p2_lat, p2_lng, station) => {
+const GetEllipseAxisLengths = (p1_lat, p1_lng, p2_lat, p2_lng, station, n) => {
     let c2 = haversine({latitude: p1_lat, longitude: p1_lng}, {latitude: p2_lat, longitude: p2_lng});
     let a = c2 / 2.0;
-    let b = fresnelzone(3, a, a, wavelength(wavelengths[station]), 2*a)*1000;
+    let b = fresnelzone(n, a, a, wavelength(wavelengths[station]), 2*a)*1000;
     return [a,b];
 }
 
-const GetEllipsePoints = (station) => {
+const GetEllipsePoints = (station, n) => {
+    n = parseInt(n, 10);
     let [p1_lat, p1_lng] = [COORD.PTK.lat, COORD.PTK.long];
     let [p2_lat, p2_lng] = [COORD[station].lat, COORD[station].long];
     let center_lng = midpoint(p1_lat, p1_lng, p2_lat, p2_lng)[0];
@@ -59,7 +60,7 @@ const GetEllipsePoints = (station) => {
     let dx = (p2_lat - p1_lat);
     let dy = (p2_lng - p1_lng);
     let anglefres =  Math.atan(dy/dx) * (180/Math.PI);
-    let [a,b] = GetEllipseAxisLengths(p1_lat, p1_lng, p2_lat, p2_lng, station);
+    let [a,b] = GetEllipseAxisLengths(p1_lat, p1_lng, p2_lat, p2_lng, station, n);
     let ellipse2 = station !== 'NWC' ? ellipseToPolygon([center_lat, center_lng], b , a, anglefres - 10) : ellipseToPolygon([center_lat, center_lng],b , a, anglefres - 2);
     //let ellipse2 =  ellipseToPolygon([center_lat, center_lng],b , a, anglefres - 50);
     let points = [];

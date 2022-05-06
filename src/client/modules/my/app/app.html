@@ -8,6 +8,6 @@
       </div>
       <div>
         <my-chart-processor eartquake={earthquakeDate} onsenddata={handleChartData} onsendvlf={handleVlf}></my-chart-processor>
-        <my-earthquake-details month={month} year={year} station={station} day={day} onselecteddate={handleUserDate}></my-earthquake-details>
+        <my-earthquake-details month={month} year={year} station={station} day={day} n={n} onselecteddate={handleUserDate} fromdate={dayFrom} todate={dayTo}></my-earthquake-details>
       </div>
 </template>

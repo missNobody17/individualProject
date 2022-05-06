@@ -11,6 +11,8 @@ export default class ChartProcessor extends LightningElement {
     chart4;
     chart5;
     chart6;
+    chart7;
+    chart8; chart9; chart10;
     @api eartquakeDate;
     corr = {
         ea: 0,
@@ -29,10 +31,14 @@ export default class ChartProcessor extends LightningElement {
     phase = 5;
     month = 7;
     whichDay = undefined;
+    dayFrom = undefined;
+    dayTo = undefined;
     year = 2019;
     loading = true;
     partOfDay = 'day';
     day = false;
+    isTimeRange=false;
+    n = 3;
     earthquakeView = false;
     months_len_day = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     month_len;
@@ -50,6 +56,7 @@ export default class ChartProcessor extends LightningElement {
         { label: 'NOV', val: 10 },
         { label: 'DEC', val: 11 }
     ];
+    isClicked = false;
     years = [
         2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
     ];
@@ -144,9 +151,8 @@ export default class ChartProcessor extends LightningElement {
                 text: title
             },
             xAxis: {
-                tickInterval: 4320
+                interval: 4320
             },
-
             series: [
                 {
                     name: title,
@@ -166,9 +172,63 @@ export default class ChartProcessor extends LightningElement {
         }
     );
     }
+
+    scatterCreator(arr1, arr2, title, chartId, xaxisTitle, yaxisTitle) {
+        let smaller = this.lowerData(arr1.length, arr2);
+        let data = this.makeOneArray(arr1, smaller);
+        return Highcharts.chart(this.template.querySelector(chartId), {
+                chart: {
+                  type: 'scatter',
+                  zoomType: 'xy'
+                },
+                title: {
+                  text: title
+                },
+                xAxis: {
+                  title: {
+                    enabled: true,
+                    text: xaxisTitle
+                  },
+                  startOnTick: true,
+                  endOnTick: true,
+                  showLastLabel: true
+                },
+                yAxis: {
+                  title: {
+                    text: yaxisTitle
+                  }
+                },
+                plotOptions: {
+                  scatter: {
+                    marker: {
+                      radius: 5,
+                      states: {
+                        hover: {
+                          enabled: true,
+                          lineColor: 'rgb(100,100,100)'
+                        }
+                      }
+                    },
+                    states: {
+                      hover: {
+                        marker: {
+                          enabled: false
+                        }
+                      }
+                    },
+                  }
+                },
+                series: [{
+                  name: 'VLF Amplitude',
+                  color: 'rgba(223, 83, 83, .5)',
+                  data: data 
+              
+                }]
+              });
+    }
     handleEarthquakeDateChange() {
         if (this.earthquake_date_val !== this.prev_earthquake_date_val && this.partOfDay !== 'night') {
-            let index = Boolean(this.whichDay) ? (this.earthquake_date_val.getHours() - 2) * 180 : (this.earthquake_date_val.getDate()) * 4320;
+            let index = Boolean(this.whichDay) ? (this.earthquake_date_val.getHours() - 2) * 180 : ((Boolean(this.dayFrom) && Boolean(this.dayTo)) ? (this.earthquake_date_val.getDate() - this.dayFrom) * 4320 :  (this.earthquake_date_val.getDate()) * 4320);
             this.chart?.series[1]?.setData([
                 { x: index, y: this.vlf_amp[index] }
             ]);
@@ -184,7 +244,11 @@ export default class ChartProcessor extends LightningElement {
         } else if (this.earthquake_date_val !== this.prev_earthquake_date_val && this.partOfDay === 'night' && this.dayLengths.length > 0) {
             let index;
             if (!Boolean(this.whichDay)) {
-                index = this.calculateIndex(this.earthquake_date_val.getDate());
+                if(this.dayFrom && this.dayTo){
+                    index = this.calculateIndex(this.earthquake_date_val.getDate() - this.dayFrom);
+                }else {
+                    index = this.calculateIndex(this.earthquake_date_val.getDate());
+                }
             } else if (this.earthquake_date_val.getHours() -1 < this.dayLengths[0]) {
                 index = this.earthquake_date_val.getHours() -1 === 0 ? 0 : (this.earthquake_date_val.getHours() - 2) * 180;
             } else if (this.earthquake_date_val.getHours()- 1 > this.dayLengths[1]) {
@@ -245,12 +309,35 @@ export default class ChartProcessor extends LightningElement {
     handleDayNight(evt) {
         this.partOfDay = evt.target.value;
     }
+    handleFresnel(evt) {
+        this.n = evt.target.value;
+    }
+
+    handleDayFrom(evt) {
+        this.dayFrom = evt.target.value;
+    }
+
+    handleDayTo(evt) {
+        this.dayTo = evt.target.value;
+    }
+
     handleView(evt) {
         if (evt.target.value === 'day') {
             this.day = true;
+            this.isTimeRange = false;
+            this.dayFrom = undefined;
+            this.dayTo = undefined;
             this.handleDataChange(1);
-        } else {
+        } else if(evt.target.value === 'month'){
             this.day = false;
+            this.isTimeRange = false;
+            this.dayFrom = undefined;
+            this.dayTo = undefined;
+            this.handleDataChange(undefined);
+        }else {
+            this.day = false;
+            this.isTimeRange = true;
+            this.dayFrom = this.dayFrom === undefined ? 1 : this.dayFrom;
             this.handleDataChange(undefined);
         }
     }
@@ -265,22 +352,30 @@ export default class ChartProcessor extends LightningElement {
         this.whichDay = range;
     }
     handleDay(evt) {
-        const day = evt.target.value;
-        this.handleDataChange(day);
+        this.whichDay = evt.target.value;
+        this.handleDataChange(this.whichDay);
     }
 
     async handleChange() {
+        if(this.isTimeRange) {
+            if(this.dayTo === undefined || parseInt(this.dayFrom, 10) > parseInt(this.dayTo, 10)){
+                alert("Incorrect day specified!");
+                return;
+            }
+
+        }
         this.loading = true;
+        this.isClicked = true;
         const [vlf_amp_month, vlf_phase_month, countDays, dLengths] =
             await fetch(
-                `/vlfRaw?month=${this.month}&year=${this.year}&amp=${this.amp}&phase=${this.phase}&isDay=${this.partOfDay}&whichDay=${this.whichDay}`
+                `/vlfRaw?month=${this.month}&year=${this.year}&amp=${this.amp}&phase=${this.phase}&isDay=${this.partOfDay}&whichDay=${this.whichDay}&dayFrom=${this.dayFrom}&dayTo=${this.dayTo}`
             )
                 .then(function (response) {
                     return response.json();
                 })
                 .catch((err) => console.log(err));
         const [vlf_amp_avg_month, vlf_phase_avg_month] = await fetch(
-            `/vlfAvg?month=${this.month}&year=${this.year}&amp=${this.amp}&phase=${this.phase}&isDay=${this.partOfDay}&whichDay=${this.whichDay}`
+            `/vlfAvg?month=${this.month}&year=${this.year}&amp=${this.amp}&phase=${this.phase}&isDay=${this.partOfDay}&whichDay=${this.whichDay}&dayFrom=${this.dayFrom}&dayTo=${this.dayTo}`
         )
             .then(function (response) {
                 return response.json();
@@ -300,7 +395,10 @@ export default class ChartProcessor extends LightningElement {
             year: this.year,
             station: this.amp,
             day: this.whichDay,
-            isDay: this.partOfDay
+            isDay: this.partOfDay,
+            n: this.n,
+            dayFrom: this.dayFrom,
+            dayTo: this.dayTo
         };
         this.dispatchEvent(
             new CustomEvent('senddata', {
@@ -337,7 +435,11 @@ export default class ChartProcessor extends LightningElement {
     }
 
     range(start, end) {
-        return Array.from({ length: end - start + 1 }, (_, i) => i);
+        let arr = [];
+        for(let i=start; i<end+1; i++ ) {
+            arr.push(i);
+        }
+        return arr;
     }
 
     getMax(arr) {
@@ -360,12 +462,17 @@ export default class ChartProcessor extends LightningElement {
     handleFlux(evt) {
         this.protons = evt.detail.protons;
         this.electrons = evt.detail.electrons;
+        this.isClicked = false;
+        this.chart7 = this.scatterCreator(this.electrons, this.vlf_amp, 'Data Correlation between Electron Flux and VLF signal amplitude', '.myChart7', 'Electron Flux', 'VLF raw data amplitude');
+        this.chart8 = this.scatterCreator(this.protons, this.vlf_amp, 'Data Correlation between Proton Flux and VLF signal amplitude', '.myChart8', 'Proton Flux', 'VLF raw data amplitude');
+        this.chart9 = this.scatterCreator(this.electrons, this.vlf_phase, 'Data Correlation between Electron Flux and VLF signal phase', '.myChart9', 'Electron Flux', 'VLF raw data phase');
+        this.chart10 = this.scatterCreator(this.protons, this.vlf_phase, 'Data Correlation between Proton Flux and VLF signal phase', '.myChart10', 'Proton Flux', 'VLF raw data phase');
         this.sendVLF();
     }
 
     async sendVLF() {
         let r = await fetch(
-            `/stats?month=${this.month}&year=${this.year}&day=${this.whichDay}&isDay=${this.partOfDay}&station=${this.amp}`
+            `/stats?month=${this.month}&year=${this.year}&day=${this.whichDay}&isDay=${this.partOfDay}&station=${this.amp}&dayFrom=${this.dayFrom}&dayTo=${this.dayTo}`
         )
             .then(function (response) {
                 return response.json();
@@ -378,5 +485,29 @@ export default class ChartProcessor extends LightningElement {
             this.corr.pp = r.pp;
             this.corr = { ...this.corr };
         }
+    }
+
+    lowerData(smallerDataLen, arrayToReduce){
+        const howMany = Math.round(arrayToReduce.length / smallerDataLen);
+        const arr = [];
+        let avg = 0;
+        for(let i = 0; i < arrayToReduce.length; i += howMany) {
+            avg = 0;
+            for(let j=0; j<howMany; j++){
+                avg += arrayToReduce[i+j];
+            }
+            arr.push(avg/howMany);
+        }
+        return arr;
+    }
+
+    makeOneArray(arr1, arr2) {
+        let arr = [];
+        let len = arr1.length > arr2.length ? arr2.length : arr1.length;
+        for(let i =0; i<len; i++) {
+            arr.push([arr1[i], arr2[i]]);
+        }
+        return arr;
+
     }
 }

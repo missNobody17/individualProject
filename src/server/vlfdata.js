@@ -98,7 +98,7 @@ const removeDay = async (arr, m, year, station, whichDay) => {
     return [arr, [sunrise_sunset[1][0][1], sunrise_sunset[1][0][0]]];
 }
 
-const rawData = async (m, year, station_amp, station_phase, isDay, whichDay) => {
+const rawData = async (m, year, station_amp, station_phase, isDay, whichDay, dayFrom, dayTo) => {
     const vlf_amp_month = [];
     const vlf_phase_month = [];
     const month = months[parseInt(m, 10)];
@@ -106,6 +106,8 @@ const rawData = async (m, year, station_amp, station_phase, isDay, whichDay) => 
     const lastDigit = parseInt(year, 10) % 10;
     const dayLengths = [];
     let countDays = 0;
+    dayTo = dayTo === 'undefined' ? undefined : parseInt(dayTo, 10);
+    dayFrom = dayTo === 'undefined' ? undefined : parseInt(dayFrom, 10);
     let data;
     whichDay = whichDay === 'undefined' ? undefined : parseInt(whichDay, 10);
     if(Boolean(whichDay)){
@@ -138,7 +140,50 @@ const rawData = async (m, year, station_amp, station_phase, isDay, whichDay) => 
             const removedPhase = await removeDay(vlf_phase_month, m, year, station_amp,whichDay);
             return [removedAmp[0], removedPhase[0], countDays, [parseFloat(String(removedAmp[1][0][0]) + '.' +  String(removedAmp[1][0][1])), parseFloat(String(removedAmp[1][1][0]) + '.' +  String(removedAmp[1][1][1]))]];
         }
-    } else {
+    } else if(Boolean(dayFrom) && Boolean(dayTo)){
+        for(let i=dayFrom; i<=dayTo; i++) {
+            let valuesAmp = [];
+            let valuesPhase = [];
+            if(i > 0 && i < 10){ //Load data
+                try{
+                    data = await getData(`./VLF-data/${year}/${month}/T0${i}${month}${lastDigit}A.kam`);
+                }catch(err) {
+                    console.log(err);
+                    break;
+                }
+            }else {  //Load data
+                try{
+                    data = await getData(`/VLF-data/${year}/${month}/T${i}${month}${lastDigit}A.kam`);
+                }catch(err) {
+                    console.log(err);
+                    break;
+                }
+            }
+            if(data){
+                for(let res of csvToArray(data)) {
+                    if(res !== undefined && Boolean(res.split(/\t/)[station_amp])) { //&& (j<1620  || j>3240)
+                        valuesAmp.push(parseFloat(res.split(/\t/)[station_amp]));
+                    }
+                    if(res !== undefined && Boolean(res.split(/\t/)[station_phase])){ //&& (j<1620  || j>3240)
+                        valuesPhase.push(parseFloat(res.split(/\t/)[station_phase]));
+                    }
+                }
+                if(isDay === 'night'){
+                    const removedAmp = await removeDay(valuesAmp, m, year, station_amp, i);
+                    const removedPhase = await removeDay(valuesPhase, m, year, station_amp, i);
+                    dayLengths.push(removedAmp[0].length); 
+                    vlf_amp_month.push(...removedAmp[0]);
+                    vlf_phase_month.push(...removedPhase[0]);
+                }else {
+                    vlf_amp_month.push(...valuesAmp);
+                    vlf_phase_month.push(...valuesPhase);
+                }
+            
+            }
+        }
+        countDays =  months_len_day[m];
+
+    }else {
         for(let i = 1; i < month_len+1; i++){
             let valuesAmp = [];
             let valuesPhase = [];
@@ -225,7 +270,7 @@ const averageData = async(m, year, station_amp, station_phase) => {
     }
     return [vlf_amp_avg_month, vlf_phase_avg_month];
 }
-const avg = async(m, year, station_amp, station_phase, whichDay) => {
+const avg = async(m, year, station_amp, station_phase, whichDay, dayFrom, dayTo) => {
     const vlf_amp_avg_month = [];
     const vlf_phase_avg_month = [];
     const month = months[parseInt(m, 10)];
@@ -276,6 +321,48 @@ const avg = async(m, year, station_amp, station_phase, whichDay) => {
         }
         vlf_amp_avg_month.push(average(valuesAmp));
         vlf_phase_avg_month.push(average(valuesPhase));
+    }else if(Boolean(dayFrom) && Boolean(dayTo)){
+        for(let i=dayFrom; i<=dayTo; i++) {
+            let valuesAmp = [];
+            let valuesPhase = [];
+            for(let j = i-5; j<i+1; j++){
+                if(j < 1) {
+                    try{
+                        data = Boolean(prev_year) ? await getData(`/VLF-data/${prev_year}/${prev_month}/T${prev_month_len+j}${prev_month}${(parseInt(prev_year, 10) % 10)}A.kam`, 'utf8') : await getData(`/VLF-data/${year}/${prev_month}/T${prev_month_len+j}${prev_month}${lastDigit}A.kam`, 'utf8');
+                    }catch(err) {
+                        console.log(err);
+                        break;
+                    }
+                }
+                else if(j > 0 && j < 10){ //Load data
+                    try{
+                        data = await getData(`/VLF-data/${year}/${month}/T0${j}${month}${lastDigit}A.kam`, 'utf8');
+                    }catch(err) {
+                        console.log(err);
+                        break;
+                    }
+                }else {  //Load data
+                    try{
+                        data = await getData(`/VLF-data/${year}/${month}/T${j}${month}${lastDigit}A.kam`);
+                    }catch(err) {
+                        console.log(err);
+                        break;
+                    }
+                }
+                if (data) {
+                    for (let res of csvToArray(data)) {
+                        if (res !== undefined && Boolean(res.split(/\t/)[station_amp])) {  // && (j<1620  || j>3240)
+                            valuesAmp.push(parseFloat(res.split(/\t/)[station_amp]));
+                        }
+                        if (res !== undefined && Boolean(res.split(/\t/)[station_phase])) { // && (j<1620  || j>3240)
+                            valuesPhase.push(parseFloat(res.split(/\t/)[station_phase]));
+                        }
+                    }
+                }
+            }
+            vlf_amp_avg_month.push(average(valuesAmp));
+            vlf_phase_avg_month.push(average(valuesPhase));
+        }
     }else {
         for(let i = 1; i < month_len+1; i++){
             let valuesAmp = [];
@@ -322,7 +409,7 @@ const avg = async(m, year, station_amp, station_phase, whichDay) => {
     return [vlf_amp_avg_month, vlf_phase_avg_month]
 }
 
-const difference = async (m, year, station_amp, station_phase, isDay, whichDay) => {
+const difference = async (m, year, station_amp, station_phase, isDay, whichDay, dayFrom, dayTo) => {
     const vlf_amp_month_diff = [];
     const vlf_phase_month_diff = [];
     const month = months[parseInt(m, 10)];
@@ -330,7 +417,9 @@ const difference = async (m, year, station_amp, station_phase, isDay, whichDay) 
     const lastDigit = parseInt(year, 10) % 10;
     let data;
     whichDay = whichDay === 'undefined' ? undefined : parseInt(whichDay, 10);
-    const [avg_amp, avg_phase] = await avg(m, year, station_amp, station_phase, whichDay);
+    dayTo = dayTo === 'undefined' ? undefined : parseInt(dayTo, 10);
+    dayFrom = dayTo === 'undefined' ? undefined : parseInt(dayFrom, 10);
+    const [avg_amp, avg_phase] = await avg(m, year, station_amp, station_phase, whichDay, dayFrom, dayTo);
     if (whichDay) {
         let valuesAmp = [];
         let valuesPhase = [];
@@ -363,6 +452,46 @@ const difference = async (m, year, station_amp, station_phase, isDay, whichDay) 
             const removedAmp = await removeDay(vlf_amp_month_diff, m, year, station_amp, whichDay);
             const removedPhase = await removeDay(vlf_phase_month_diff, m, year, station_amp, whichDay);
             return [removedAmp[0], removedPhase[0]];
+        }
+    } else if(Boolean(dayFrom) && Boolean(dayTo)){
+        let j=0;
+        for(let i=dayFrom; i<=dayTo; i++) {
+            let valuesAmp = [];
+            let valuesPhase = [];
+            if(i > 0 && i < 10){ //Load data
+                try{
+                    data = await getData(`./VLF-data/${year}/${month}/T0${i}${month}${lastDigit}A.kam`);
+                }catch(err) {
+                    console.log(err);
+                    break;
+                }
+            }else {  //Load data
+                try{
+                    data = await getData(`/VLF-data/${year}/${month}/T${i}${month}${lastDigit}A.kam`);
+                }catch(err) {
+                    console.log(err);
+                    break;
+                }
+            }
+            if(data){
+                for(let res of csvToArray(data)) {
+                    if(res !== undefined && Boolean(res.split(/\t/)[station_amp])) { //&& (j<1620  || j>3240)
+                        valuesAmp.push(parseFloat(res.split(/\t/)[station_amp]));
+                    }
+                    if(res !== undefined && Boolean(res.split(/\t/)[station_phase])){ //&& (j<1620  || j>3240)
+                        valuesPhase.push(parseFloat(res.split(/\t/)[station_phase]));
+                    }
+                }
+                if(isDay === 'night'){
+                    const removedAmp = await removeDay(valuesAmp, m, year, station_amp, i);
+                    const removedPhase = await removeDay(valuesPhase, m, year, station_amp, i);
+                    vlf_amp_month_diff.push(...arraySubstract(removedAmp[0], avg_amp[j]));
+                    vlf_phase_month_diff.push(...arraySubstract(removedPhase[0], avg_phase[j]));
+                }else {
+                    vlf_amp_month_diff.push(...arraySubstract(valuesAmp, avg_amp[j]));
+                    vlf_phase_month_diff.push(...arraySubstract(valuesPhase, avg_phase[j]));
+                }
+            }
         }
     }else {
         for(let i = 1; i < month_len+1; i++){
@@ -408,7 +537,6 @@ const difference = async (m, year, station_amp, station_phase, isDay, whichDay) 
 }
 
 const weekBeforeAfter = async (m, year, station_amp, station_phase, isDay, whichDay) => {
-    console.log('which day ' + months[parseInt(m, 10)+1] +' ' + m);
     const vlf_amp_avg_month = [];
     const vlf_phase_avg_month = [];
     const dayLengths = [];

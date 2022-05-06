@@ -11,6 +11,9 @@ export default class App extends LightningElement {
     phase;
     protons;
     electrons;
+    n = 3;
+    dayFrom;
+    dayTo;
     constructor() {
 
         super();
@@ -26,6 +29,9 @@ export default class App extends LightningElement {
         this.station = evt.detail.station;
         this.day = evt.detail.day;
         this.isDay = evt.detail.day === 'day' ? true : false;
+        this.n = evt.detail.n;
+        this.dayFrom = evt.detail.dayFrom;
+        this.dayTo = evt.detail.dayTo;
     }
 
     handleUserDate(evt){

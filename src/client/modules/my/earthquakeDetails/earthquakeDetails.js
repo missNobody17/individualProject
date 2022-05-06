@@ -18,6 +18,36 @@ export default class EarthquakeDetails extends LightningElement {
     prev_year_val = 2019;
     prev_longMin = COORD[4].long;
     prev_latMin = COORD[4].lat;
+    n_val = 3;
+    prev_n_val = 3;
+    from_date_val;
+    to_date_val;
+    prev_from_date_val;
+    prev_to_date_val;
+    @api
+    get fromdate() {
+        return this.from_date_val;
+    }
+    set fromdate(val) {
+        this.setAttribute('from_date_val', val);
+        this.prev_from_date_val= this.from_date_val;
+        this.from_date_val = val;
+        if (this.prev_from_date_val !== this.from_date_val) {
+            this.handleValueChange();
+        }
+    }
+    @api
+    get todate() {
+        return this.to_date_val;
+    }
+    set todate(val) {
+        this.setAttribute('to_date_val', val);
+        this.prev_to_date_val = this.to_date_val;
+        this.to_date_val = val;
+        if (this.prev_to_date_val !== this.to_date_val) {
+           this.handleValueChange();
+        }
+    }
     @api 
     get month(){
         return this.month_val;
@@ -27,6 +57,18 @@ export default class EarthquakeDetails extends LightningElement {
         this.prev_month_val = this.month_val;
         this.month_val = val;
         if(this.prev_month_val !== this.month_val){
+            this.handleValueChange();
+        }
+    }
+    @api 
+    get n(){
+        return this.n_val;
+    }
+    set n(val){
+        this.setAttribute('n', val);
+        this.prev_n_val = this.n_val;
+        this.n_val = val;
+        if(this.prev_n_val !== this.n_val){
             this.handleValueChange();
         }
     }
@@ -106,11 +148,18 @@ export default class EarthquakeDetails extends LightningElement {
             endDate.setDate(endDate.getDate() + 2);
             this.dateFrom = startDate.toISOString().split('T')[0];
             this.dateTo = endDate.toISOString().split('T')[0];
+        }else if(this.from_date_val && this.to_date_val){
+            let startDate = new Date(this.year, this.month, this.from_date_val);
+            startDate.setDate(startDate.getDate() + 1);
+            let endDate = new Date(this.year, this.month, this.to_date_val);
+            endDate.setDate(endDate.getDate() + 2);
+            this.dateFrom = startDate.toISOString().split('T')[0];
+            this.dateTo = endDate.toISOString().split('T')[0];
         }else {
             this.dateFrom = new Date(this.year, this.month, 1).toISOString();
             this.dateTo = new Date(this.year, this.month, months_len_day[this.month]).toISOString();
         }
-        let points = await fetch(`/point?station=${stationMap[this.station_val]}`).then(res => res.json()).catch(err => console.log(err));
+        let points = await fetch(`/point?station=${stationMap[this.station_val]}&n=${this.n_val}`).then(res => res.json()).catch(err => console.log(err));
         let query = '';
         if(this.dateFrom) {
             query += `&starttime=${this.dateFrom}`;
