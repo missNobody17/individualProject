@@ -53,14 +53,17 @@
         "prettier:verify": "prettier --list-different \"**/*.{css,html,js,json,md,ts,yaml,yml}\"",
         "start": "run-p start:client start:api",
         "start:api": "node src/server/api.js",
-        "start:client": "node scripts/server.js",
+        "start:client": "node scripts/api.js",
         "test:unit": "lwc-services test:unit",
         "test:unit:coverage": "lwc-services test:unit --coverage",
         "test:unit:debug": "lwc-services test:unit --debug",
         "test:unit:watch": "lwc-services test:unit --watch",
         "watch": "run-p watch:client watch:server",
         "watch:client": "lwc-services watch",
-        "watch:server": "nodemon"
+        "watch:server": "nodemon",
+        "serve": "run-p serve:client serve:api",
+        "serve:api": "node src/server/api.js",
+        "serve:client": "node scripts/api.js"
     },
     "devDependencies": {
         "eslint": "^7.32.0",
