@@ -7,6 +7,8 @@ const f = require('./points');
 const vlf = require('./vlfdata');
 const ftp = require('./ftpAccess');
 const stat = require('./calculateCorr');
+const path = require('path');
+const exp = require('constants');
 
 const app = express();
 app.use(helmet());
@@ -14,6 +16,12 @@ app.use(compression());
 
 const HOST = process.env.API_HOST || 'localhost';
 const PORT = process.env.API_PORT || 3002;
+
+const DIST_DIR = './dist';
+app.use(express.static(DIST_DIR));
+app.use(/^(?!\/api).+/, (req, res) => {
+    res.sendFile(path.resolve(DIST_DIR, 'index.html'));
+})
 
 
 app.get('/vlfRaw', async (req, res) => {
@@ -40,7 +48,7 @@ app.get('/protons', async (req, res) => {
     return res.send(protons);
 });
 
-app.get('/point', (req, res) => {
+app.get('/api/point', (req, res) => {
     return res.send(f.GetEllipsePoints(req.query.station, req.query.n));
 });
 
