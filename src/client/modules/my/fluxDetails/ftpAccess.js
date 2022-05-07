@@ -44,7 +44,7 @@ const getSunsetSunrise = async (month, year, st, whichDay) => {
     try{
         if (whichDay && whichDay !== 'undefined') {
             const url = `https://api.sunrise-sunset.org/json?lat=${coord[station].lat}lng=${coord[station].long}&date=${year}-${month}-${whichDay}`;
-            const response = await fetch(url, {mode: 'cors'});
+            const response = await fetch(url, {mode: 'no-cors'});
             const json = await response.json();
             const obj = json.results;
             if (Boolean(obj.astronomical_twilight_begin)) {
@@ -77,7 +77,7 @@ const removeDay = async (arr, m, year, station, whichDay) => {
 const getResponse = async (url) => {
     let text;
     try{
-        const response = await fetch(url, {mode: 'cors'});
+        const response = await fetch(url, {mode: 'no-cors'});
         text = await (await response.text());
     }catch(err){
         console.log(err);
