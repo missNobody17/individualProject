@@ -160,6 +160,7 @@ export default class EarthquakeDetails extends LightningElement {
             this.dateTo = new Date(this.year, this.month, months_len_day[this.month]).toISOString();
         }
         let points = await fetch(`/api/point?station=${stationMap[this.station_val]}&n=${this.n_val}`).then(res => res.json()).catch(err => console.log(err));
+        console.log(points);
         let query = '';
         if(this.dateFrom) {
             query += `&starttime=${this.dateFrom}`;

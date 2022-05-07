@@ -16,8 +16,6 @@ app.use(compression());
 const HOST = process.env.API_HOST || 'localhost';
 const PORT = process.env.API_PORT || 3002;
 
-app.use("/api/point", express.static(path.join(__dirname, "/points.js")));
-
 app.get('/vlfRaw', async (req, res) => {
     const [vlf_amp, vlf_phase, countDays, dayLengths] = await vlf.rawData(req.query.month, req.query.year , req.query.amp, req.query.phase, req.query.isDay, req.query.whichDay, req.query.dayFrom, req.query.dayTo);
     return res.send([vlf_amp, vlf_phase, countDays, dayLengths]);
@@ -43,7 +41,8 @@ app.get('/protons', async (req, res) => {
 });
 
 app.get('/api/point', (req, res) => {
-    return res.send(f.GetEllipsePoints(req.query.station, req.query.n));
+    return res.send('GET HTTP method on user resource');
+    //return res.send(f.GetEllipsePoints(req.query.station, req.query.n));
 });
 
 app.get('/stats', async (req, res) => {
