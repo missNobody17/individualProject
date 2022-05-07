@@ -2,7 +2,7 @@
 // https://github.com/muenzpraeger/create-lwc-app/blob/main/packages/lwc-services/example/lwc-services.config.js
 module.exports = {
     resources: [
-        { from: 'src/server/client/resources/', to: 'dist/resources/'},
+        { from: 'src/client/resources/', to: 'dist/resources/'},
         { from: 'src/server/calculateCorr.js', to: 'dist/calculateCorr.js' },
         { from: 'src/server/ftpAccess.js', to: 'dist/ftpAccess.js' },
         { from: 'src/server/points.js', to: 'dist/points.js' },
