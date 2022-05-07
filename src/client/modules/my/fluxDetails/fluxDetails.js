@@ -2,6 +2,7 @@
 /* eslint-disable no-extra-boolean-cast */
 import { LightningElement, track, api} from 'lwc';
 import Highcharts from 'highcharts';
+import {getElectrons, getProtons} from './ftpAccess';
 
 export default class FluxDetails extends LightningElement {
     @track chart;
@@ -132,7 +133,7 @@ export default class FluxDetails extends LightningElement {
     }
 
     async connectedCallback() {
-        const [data, dLengths] = await fetch(
+        /*const [data, dLengths] = await fetch(
             `/electrons?month=${this.month}&year=${this.year}&day=${this.day_val}&isDay=${this.is_day_val}&station=${this.station}&dayFrom=${this.day_from_val}&dayTo=${this.day_to_val}`
         )
             .then(function (response) {
@@ -145,7 +146,9 @@ export default class FluxDetails extends LightningElement {
             .then(function (response) {
                 return response.json();
             })
-            .catch((err) => console.log(err));
+            .catch((err) => console.log(err));*/
+        const [data, dLengths] = getElectrons(this.month, this.year, this.day_val, this.is_day_val, this.station, this.day_from_val, this.day_to_val);
+        const data2 = getProtons(this.month, this.year, this.day_val, this.is_day_val, this.station, this.day_from_val, this.day_to_val);
         setTimeout(() => {
             this.electrons = [...data];
             this.protons = [...data2];

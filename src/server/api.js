@@ -41,8 +41,7 @@ app.get('/protons', async (req, res) => {
 });
 
 app.get('/api/point', (req, res) => {
-    return res.send('GET HTTP method on user resource');
-    //return res.send(f.GetEllipsePoints(req.query.station, req.query.n));
+    return res.send(f.GetEllipsePoints(req.query.station, req.query.n));
 });
 
 app.get('/stats', async (req, res) => {
