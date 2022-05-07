@@ -149,6 +149,8 @@ export default class FluxDetails extends LightningElement {
             .catch((err) => console.log(err));*/
         const [data, dLengths] = getElectrons(this.month, this.year, this.day_val, this.is_day_val, this.station, this.day_from_val, this.day_to_val);
         const data2 = getProtons(this.month, this.year, this.day_val, this.is_day_val, this.station, this.day_from_val, this.day_to_val);
+        console.log('data');
+        console.log(data);
         setTimeout(() => {
             this.electrons = [...data];
             this.protons = [...data2];
