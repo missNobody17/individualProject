@@ -7,6 +7,7 @@ const f = require('./points');
 const vlf = require('./vlfdata');
 const ftp = require('./ftpAccess');
 const stat = require('./calculateCorr');
+const path = require('path');
 
 const app = express();
 app.use(helmet());
@@ -15,6 +16,7 @@ app.use(compression());
 const HOST = process.env.API_HOST || 'localhost';
 const PORT = process.env.API_PORT || 3002;
 
+app.use("/api/point", express.static(path.join(__dirname, "/points.js")));
 
 app.get('/vlfRaw', async (req, res) => {
     const [vlf_amp, vlf_phase, countDays, dayLengths] = await vlf.rawData(req.query.month, req.query.year , req.query.amp, req.query.phase, req.query.isDay, req.query.whichDay, req.query.dayFrom, req.query.dayTo);
