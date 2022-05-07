@@ -2,41 +2,6 @@ const Statistics = require('statistics.js');
 const vlf = require('./vlfdata');
 const ftp = require('./ftpAccess');
 
-const average = (data) => {
-    let sum = 0;
-    for(let d of data.flat(Infinity)){
-        if(d) {
-            sum+= d;
-        }
-    }
-    const avg = (sum / data.length) || 0;
-    return avg
-}
-
-const standardDeviation = (values) => {
-    let avg = average(values);
-    
-    let squareDiffs = values.map(function(value){
-      let difference = value - avg;
-      let sqrDifference = difference * difference;
-      return sqrDifference;
-    });
-    
-    let avgSquareDifference = average(squareDiffs);
-  
-    var stdDeviation = Math.sqrt(avgSquareDifference);
-    return stdDeviation;
-}
-
-const normalizeData = (arr) => {
-    const std = standardDeviation(arr);
-    const mean = average(arr);
-    const newArr = [];
-    for(let a of arr) {
-        newArr.push(std === 0 ? a : (a-mean)/std);
-    }
-    return newArr;
-}
 
 const calculateCorrelation = (arr1,arr2) => {
     //arr1 = [...normalizeData(arr1)];
@@ -72,6 +37,7 @@ const init = async (month, year, whichDay, isDay, station, dayFrom, dayTo) => {
     const [vlf_amp, vlf_phase] = await vlf.rawData(month, year , station, parseInt(station, 10) + 1, isDay, dayFrom, dayTo);
     const protons = await ftp.getProtons(month, year, whichDay, isDay, station, dayFrom, dayTo);
     const [electrons, dLengths] = await ftp.getElectrons(month, year, whichDay, isDay, station, dayFrom, dayTo);
+    console.log(dLengths);
     if (vlf_amp && vlf_phase && electrons && protons) {
         try {
             const r1 = calculateCorrelation(electrons, lowerData(electrons.length, vlf_amp));

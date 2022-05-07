@@ -2,8 +2,6 @@
 /* eslint-disable no-else-return */
 /* eslint-disable no-await-in-loop */
 
-const { CategoryScale } = require('chart.js');
-
 /* eslint-disable no-shadow */
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const months_len_day = [31,28,31,30,31,30,31,31,30,31,30,31];

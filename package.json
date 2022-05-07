@@ -3,6 +3,16 @@
     "version": "0.0.1",
     "author": "Natalia",
     "bugs": "https://github.com/Natalia/uni-app/issues",
+    "lwc": {
+        "modules": [
+            {
+                "dir": "src/server"
+            },{
+                "name": "point",
+                "path": "src/server/points.js"
+            }
+        ]
+    },
     "dependencies": {
         "@types/mapbox-gl": "^2.6.0",
         "basic-ftp": "^4.6.6",
